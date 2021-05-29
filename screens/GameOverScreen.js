@@ -16,24 +16,27 @@ import TitleText from "../components/TitleText";
 import Colors from "../constants/color";
 
 export default function GameOverScreen(props) {
+  const ScreenSizeForInitialValue = () => {
+    if (Dimensions.get("window").height < 500) {
+      return 150;
+    }
+    return Dimensions.get("window").width * 0.7;
+  };
+
   const [dynamicImageSize, setDynamicImageSize] = useState(
-    Dimensions.get("window").width * 0.7
+    ScreenSizeForInitialValue()
   );
 
   useEffect(() => {
     const updateLayout = () => {
-      if (Dimensions.get("window").height < 500) {
-        setDynamicImageSize(150);
-      } else {
-        setDynamicImageSize(Dimensions.get("window").width * 0.7);
-      }
+      setDynamicImageSize(ScreenSizeForInitialValue());
     };
 
     Dimensions.addEventListener("change", updateLayout);
     return () => {
       Dimensions.removeEventListener("change", updateLayout);
     };
-  });
+  }, []);
 
   return (
     <ScrollView>
