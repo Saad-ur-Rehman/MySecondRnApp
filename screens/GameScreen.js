@@ -28,7 +28,9 @@ const generateRandomBetween = (min, max, exclude) => {
     return rndNum;
   }
 };
-
+{
+  /* === Scroll View ===  */
+}
 // const renderScrollView = (value, numOfRound) => {
 //     return(
 //             <View key={value} style={styles.listItems}>
