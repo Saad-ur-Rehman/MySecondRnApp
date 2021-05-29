@@ -53,11 +53,30 @@ export default function GameScreen(props) {
   const initialGuess = generateRandomBetween(1, 100, props.userChoice);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
   const [pastGuesses, setPastGuesses] = useState([initialGuess.toString()]);
+  const [availableDeviceWidth, setAvailableDeviceWidth] = useState(
+    Dimensions.get("window").width
+  );
+  const [availableDeviceHeight, setAvailableDeviceHeight] = useState(
+    Dimensions.get("window").height
+  );
 
   const currentlow = useRef(1);
   const currentHigh = useRef(100);
 
   const { userChoice, onGameOver } = props;
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setAvailableDeviceWidth(Dimensions.get("window").width);
+      setAvailableDeviceHeight(Dimensions.get("window").height);
+    };
+
+    Dimensions.addEventListener("change", updateLayout);
+
+    return () => {
+      Dimensions.removeEventListener("change", updateLayout);
+    };
+  });
 
   useEffect(() => {
     if (currentGuess === userChoice) {
@@ -98,8 +117,41 @@ export default function GameScreen(props) {
 
   // Using Two Different Style Objects
   let listContainerStyle = styles.listContainer;
-  if (Dimensions.get("window").width < 350) {
+
+  if (availableDeviceWidth < 350) {
     listContainerStyle = styles.listContainerBig;
+  }
+
+  if (availableDeviceHeight < 500) {
+    return (
+      <View style={styles.screen}>
+        <BodyText>Opponent's Guess</BodyText>
+        <View style={styles.landScape}>
+          <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
+            <Ionicons name="md-remove" size={24} color="white" />
+          </MainButton>
+          <NumberContainer>{currentGuess}</NumberContainer>
+          <MainButton onPress={nextGuessHandler.bind(this, "greater")}>
+            <Ionicons name="md-add" size={24} color="white" />
+          </MainButton>
+        </View>
+
+        <View style={listContainerStyle}>
+          {/* === Scroll View ===  */}
+          {/* <ScrollView contentContainerStyle={styles.list}>
+                {pastGuesses.map((guess, index) => (renderScrollView(guess, pastGuesses.length - index)))}
+            </ScrollView> */}
+          {/* === Flat List ===  */}
+
+          <FlatList
+            contentContainerStyle={styles.list}
+            keyExtractor={(item) => item}
+            data={pastGuesses}
+            renderItem={renderFlatList.bind(this, pastGuesses.length)}
+          ></FlatList>
+        </View>
+      </View>
+    );
   }
 
   return (
@@ -144,6 +196,12 @@ const styles = StyleSheet.create({
     marginTop: Dimensions.get("window").height > 600 ? 20 : 8,
     width: 300,
     maxWidth: "80%",
+  },
+  landScape: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    alignItems: "center",
   },
 
   // for scroll view styling list container width should be greater than listItems width.
