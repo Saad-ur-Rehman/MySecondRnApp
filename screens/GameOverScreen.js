@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,11 +16,39 @@ import TitleText from "../components/TitleText";
 import Colors from "../constants/color";
 
 export default function GameOverScreen(props) {
+  const [dynamicImageSize, setDynamicImageSize] = useState(
+    Dimensions.get("window").width * 0.7
+  );
+
+  useEffect(() => {
+    const updateLayout = () => {
+      if (Dimensions.get("window").height < 500) {
+        setDynamicImageSize(150);
+      } else {
+        setDynamicImageSize(Dimensions.get("window").width * 0.7);
+      }
+    };
+
+    Dimensions.addEventListener("change", updateLayout);
+    return () => {
+      Dimensions.removeEventListener("change", updateLayout);
+    };
+  });
+
   return (
     <ScrollView>
       <View style={styles.screen}>
         <TitleText>The Game is Over!</TitleText>
-        <View style={styles.imageContainer}>
+        <View
+          style={[
+            styles.imageContainer,
+            {
+              width: dynamicImageSize,
+              height: dynamicImageSize,
+              borderRadius: dynamicImageSize,
+            },
+          ]}
+        >
           <Image
             source={require("../assets/success.png")}
             style={styles.image}
@@ -47,11 +75,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingVertical: 10,
   },
   imageContainer: {
-    width: Dimensions.get("window").width * 0.7,
-    height: Dimensions.get("window").width * 0.7,
-    borderRadius: Dimensions.get("window").width * 0.7,
+    // width: Dimensions.get("window").width * 0.7,
+    // height: Dimensions.get("window").width * 0.7,
+    // borderRadius: Dimensions.get("window").width * 0.7,
     borderWidth: 3,
     borderColor: "black",
     overflow: "hidden",
