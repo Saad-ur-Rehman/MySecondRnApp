@@ -16,41 +16,73 @@ import TitleText from "../components/TitleText";
 import Colors from "../constants/color";
 
 export default function GameOverScreen(props) {
-  const ScreenSizeForInitialValue = () => {
-    if (Dimensions.get("window").height < 500) {
-      return 150;
-    }
-    return Dimensions.get("window").width * 0.7;
-  };
+  // === for image size  (( this code could be more efficient )). ===
 
-  const [dynamicImageSize, setDynamicImageSize] = useState(
-    ScreenSizeForInitialValue()
+  // const ScreenSizeForInitialValue = () => {
+  //   if (Dimensions.get("window").height < 500) {
+  //     return 150;
+  //   }
+  //   return Dimensions.get("window").width * 0.7;
+  // };
+
+  // const [dynamicImageSize, setDynamicImageSize] = useState(
+  //   ScreenSizeForInitialValue()
+  // );
+
+  // useEffect(() => {
+  //   const updateLayout = () => {
+  //     setDynamicImageSize(ScreenSizeForInitialValue());
+  //   };
+
+  //   Dimensions.addEventListener("change", updateLayout);
+  //   return () => {
+  //     Dimensions.removeEventListener("change", updateLayout);
+  //   };
+  // }, []);
+
+  // === using state efficiently to use dimensions for responsive page. ===
+
+  const [availableScreenWidth, setAvailableScreenWidth] = useState(
+    Dimensions.get("window").width
+  );
+  const [availableScreenHeight, setAvailableScreenHeight] = useState(
+    Dimensions.get("window").height
   );
 
   useEffect(() => {
-    const updateLayout = () => {
-      setDynamicImageSize(ScreenSizeForInitialValue());
+    const layoutUpdate = () => {
+      setAvailableScreenWidth(Dimensions.get("window").width);
+      setAvailableScreenHeight(Dimensions.get("window").height);
     };
 
-    Dimensions.addEventListener("change", updateLayout);
+    Dimensions.addEventListener("change", layoutUpdate);
     return () => {
-      Dimensions.removeEventListener("change", updateLayout);
+      Dimensions.removeEventListener("change", layoutUpdate);
     };
-  }, []);
+  });
+
+  let dynamicImageSizeObj = {
+    width: availableScreenWidth * 0.7,
+    height: availableScreenWidth * 0.7,
+    borderRadius: availableScreenWidth * 0.7,
+    marginVertical: availableScreenHeight / 70,
+  };
+
+  if (availableScreenHeight < 500) {
+    dynamicImageSizeObj = {
+      width: 150,
+      height: 150,
+      borderRadius: 150,
+      marginVertical: availableScreenHeight / 70,
+    };
+  }
 
   return (
     <ScrollView>
       <View style={styles.screen}>
         <TitleText>The Game is Over!</TitleText>
         <View
-          style={[
-            styles.imageContainer,
-            {
-              width: dynamicImageSize,
-              height: dynamicImageSize,
-              borderRadius: dynamicImageSize,
-            },
-          ]}
+          style={Object.assign({}, styles.imageContainer, dynamicImageSizeObj)}
         >
           <Image
             source={require("../assets/success.png")}
@@ -58,8 +90,18 @@ export default function GameOverScreen(props) {
             resizeMode="cover"
           />
         </View>
-        <View style={styles.resultContainer}>
-          <BodyText style={styles.resultText}>
+        <View
+          style={{
+            ...styles.resultContainer,
+            marginVertical: availableScreenHeight / 100,
+          }}
+        >
+          <BodyText
+            style={{
+              ...styles.resultText,
+              fontSize: availableScreenHeight < 400 ? 16 : 20,
+            }}
+          >
             Your Phone needed{" "}
             <Text style={styles.highlight}>{props.roundsNumber}</Text> rounds to
             guess the number{" "}
@@ -87,7 +129,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "black",
     overflow: "hidden",
-    marginVertical: Dimensions.get("window").height / 70,
+    // marginVertical: Dimensions.get("window").height / 70,
   },
   image: {
     width: "100%",
@@ -95,11 +137,11 @@ const styles = StyleSheet.create({
   },
   resultContainer: {
     marginHorizontal: 30,
-    marginVertical: Dimensions.get("window").height / 100,
+    // marginVertical: Dimensions.get("window").height / 100,
   },
   resultText: {
     textAlign: "center",
-    fontSize: Dimensions.get("window").height < 400 ? 16 : 20,
+    // fontSize: Dimensions.get("window").height < 400 ? 16 : 20,
   },
   highlight: {
     color: Colors.primary,

@@ -154,11 +154,14 @@ export default function GameScreen(props) {
     );
   }
 
+  let availableHeight = 600 ? 20 : 5;
+
   return (
     <View style={styles.screen}>
       <BodyText>Opponent's Guess</BodyText>
+
       <NumberContainer>{currentGuess}</NumberContainer>
-      <Card style={styles.buttonContainer}>
+      <Card style={{ ...styles.buttonContainer, marginTop: availableHeight }}>
         <MainButton onPress={nextGuessHandler.bind(this, "lower")}>
           <Ionicons name="md-remove" size={24} color="white" />
         </MainButton>
@@ -166,6 +169,7 @@ export default function GameScreen(props) {
           <Ionicons name="md-add" size={24} color="white" />
         </MainButton>
       </Card>
+
       <View style={listContainerStyle}>
         {/* === Scroll View ===  */}
         {/* <ScrollView contentContainerStyle={styles.list}>
@@ -185,6 +189,9 @@ export default function GameScreen(props) {
 }
 
 const styles = StyleSheet.create({
+  marginTest: {
+    marginTop: Dimensions.get("window").height > 600 ? 20 : 8,
+  },
   screen: {
     flex: 1,
     padding: 10,
@@ -193,7 +200,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: Dimensions.get("window").height > 600 ? 20 : 8,
+    //marginTop: Dimensions.get("window").height > 600 ? 20 : 8,
     width: 300,
     maxWidth: "80%",
   },
